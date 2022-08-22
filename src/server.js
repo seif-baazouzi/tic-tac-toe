@@ -44,6 +44,24 @@ server.connection((ws) => {
       server.emit(room.paler1, "start-game")
       server.emit(room.paler2, "start-game")
       
+      server.on(room.paler1, "reset", () => {
+        room.endGame = false
+        room.currentPlayer = "p1"
+        room.fields = [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
+
+        server.emit(room.paler1, "reset")
+        server.emit(room.paler2, "reset")
+      })
+
+      server.on(room.paler2, "reset", () => {
+        room.endGame = false
+        room.currentPlayer = "p1"
+        room.fields = [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
+        
+        server.emit(room.paler1, "reset")
+        server.emit(room.paler2, "reset")
+      })
+
       room.paler1.on("close", () => {
         server.emit(room.paler2, "message", "Player 1 disconnected")
         room.paler2.close()
@@ -67,13 +85,13 @@ server.connection((ws) => {
 
         if(checkWin(room.fields, "X")) {
           room.endGame = true
-          server.emit(room.paler1, "message", "Player 1 WIN")
-          server.emit(room.paler2, "message", "Player 1 WIN")
+          server.emit(room.paler1, "end-game", "Player 1 WIN")
+          server.emit(room.paler2, "end-game", "Player 1 WIN")
         }
 
         if(room.fields.every((f) => f === "X" || f === "O")) {
-          server.emit(room.paler1, "message", "No one win")
-          server.emit(room.paler2, "message", "No one win")
+          server.emit(room.paler1, "end-game", "No one win")
+          server.emit(room.paler2, "end-game", "No one win")
         }
       })
 
@@ -90,13 +108,13 @@ server.connection((ws) => {
 
         if(checkWin(room.fields, "O")) {
           room.endGame = true
-          server.emit(room.paler1, "message", "Player 2 WIN")
-          server.emit(room.paler2, "message", "Player 2 WIN")
+          server.emit(room.paler1, "end-game", "Player 2 WIN")
+          server.emit(room.paler2, "end-game", "Player 2 WIN")
         }
 
         if(room.fields.every((f) => f === "X" || f === "O")) {
-          server.emit(room.paler1, "message", "No one win")
-          server.emit(room.paler2, "message", "No one win")
+          server.emit(room.paler1, "end-game", "No one win")
+          server.emit(room.paler2, "end-game", "No one win")
         }
       })
     } else {

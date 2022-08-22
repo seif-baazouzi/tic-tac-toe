@@ -23,6 +23,7 @@ function main() {
   }
 
   const status = document.getElementById("status")
+  const resetBtn = document.getElementById("reset")
 
   const ws = new WebSocketClient(`ws://${location.hostname}:8080`)
   
@@ -46,12 +47,30 @@ function main() {
     })
 
     ws.on("set-field", ({ field, content, message }) => {
-      document.getElementById("status").innerText = message
+      status.innerText = message
       document.getElementById(`field${field}`).innerText = content
     })
 
     ws.on("message", (message) => {
-      document.getElementById("status").innerText = message
+      status.innerText = message
+    })
+
+    resetBtn.addEventListener("click", () => {
+      ws.emit("reset")
+    })
+
+    ws.on("reset", () => {
+      status.innerText = "Player 1"
+      resetBtn.style.display = "none"
+
+      for(let index = 1; index<=9; index++) {
+        document.getElementById(`field${index}`).innerText = index
+      }
+    })
+
+    ws.on("end-game", (message) => {
+      status.innerText = message
+      resetBtn.style.display = "block"
     })
   })
 }
