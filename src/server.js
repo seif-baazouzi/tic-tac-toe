@@ -7,7 +7,7 @@ const app = express()
 
 const morgan = require("morgan")
 
-// app.use(morgan(":method :url :status :res[content-length] - :response-time ms"))
+app.use(morgan(":method :url :status :res[content-length] - :response-time ms"))
 
 app.use(express.static(path.join(__dirname, "public")))
 
@@ -44,13 +44,43 @@ server.connection((ws) => {
       server.emit(room.paler1, "start-game")
       server.emit(room.paler2, "start-game")
       
-      room.paler1.on("close", () => room.paler2.on("close", rooms.delete(roomID)))
-      room.paler2.on("close", () => room.paler1.on("close", rooms.delete(roomID)))
+      room.paler1.on("close", () => {
+        server.emit(room.paler2, "message", "Player 1 disconnected")
+        room.paler2.close()
+      })
 
+      room.paler2.on("close", () => {
+        server.emit(room.paler1, "message", "Player 2 disconnected")
+        room.paler1.close()
+      })
+
+      server.on(room.paler1, "click", (field) => {
+        if(room.currentPlayer != "p1") return
+        if(room.fields[field-1] != field) return
+
+        room.fields[field-1] = "X"
+        server.emit(room.paler1, "set-field", { field, content: "X", message: "Player 2" })
+        server.emit(room.paler2, "set-field", { field, content: "X", message: "Player 2" })
+
+        room.currentPlayer = "p2"
+      })
+
+      server.on(room.paler2, "click", (field) => {
+        if(room.currentPlayer != "p2") return
+        if(room.fields[field-1] != field) return
+        
+        room.fields[field-1] = "O"
+        server.emit(room.paler1, "set-field", { field, content: "O", message: "Player 1" })
+        server.emit(room.paler2, "set-field", { field, content: "O", message: "Player 1" })
+
+        room.currentPlayer = "p1"
+      })
     } else {
       const room = {
         paler1: ws,
         paler2: null,
+        currentPlayer: "p1",
+        fields: [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
       }
       
       rooms.set(roomID, room)

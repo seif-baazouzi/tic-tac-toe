@@ -39,6 +39,19 @@ function main() {
 
     ws.on("start-game", () => {
       status.innerText = "start-game"
+
+      for(let index = 1; index<=9; index++) {
+        document.getElementById(`field${index}`).addEventListener("click", () => ws.emit("click", index))
+      }
+    })
+
+    ws.on("set-field", ({ field, content, message }) => {
+      document.getElementById("status").innerText = message
+      document.getElementById(`field${field}`).innerText = content
+    })
+
+    ws.on("message", (message) => {
+      document.getElementById("status").innerText = message
     })
   })
 }
