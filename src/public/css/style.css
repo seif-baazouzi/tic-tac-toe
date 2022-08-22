@@ -1,0 +1,53 @@
+@font-face {
+  font-family: "NotoSans";
+  src: url("/fonts/NotoSans.ttf");
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --white: #fff;
+  --black: #111;
+  --light-gray: #eee;
+}
+
+body {
+  font-family: "NotoSans";
+  background-color: var(--white);
+}
+
+.container {
+  padding: 1rem;
+}
+
+.grid {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: .75rem;
+}
+
+.grid .field {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  background-color: var(--light-gray);
+  cursor: pointer;
+  user-select: none;
+}
+
+.grid .field:hover {
+  opacity: .8;
+}
+
