@@ -19,8 +19,28 @@ function main() {
   const params = parseQueryParams()
 
   if(!params.roomID) {
-    location.href = "/new-room"
+    return location.href = "/new-room"
   }
+
+  const status = document.getElementById("status")
+
+  const ws = new WebSocketClient(`ws://${location.hostname}:8080`)
+  
+  ws.connect(() => {
+    ws.emit("join-room", params.roomID)
+    
+    ws.on("redirect-new-room", () => {
+      location.href = "/new-room"
+    })
+
+    ws.on("wait-plater2", () => {
+      status.innerText = "wait-plater2"
+    })
+
+    ws.on("start-game", () => {
+      status.innerText = "start-game"
+    })
+  })
 }
 
 main()

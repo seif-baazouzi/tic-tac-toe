@@ -1,6 +1,10 @@
-class WebSocketConnection {
+class WebSocketClient {
   constructor(url) {
     this.socket = new WebSocket(url)
+  }
+
+  connect(callBack) {
+    this.socket.addEventListener("open", callBack)
   }
 
   on(event, callBack) {
