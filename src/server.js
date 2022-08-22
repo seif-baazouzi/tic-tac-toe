@@ -70,6 +70,11 @@ server.connection((ws) => {
           server.emit(room.paler1, "message", "Player 1 WIN")
           server.emit(room.paler2, "message", "Player 1 WIN")
         }
+
+        if(room.fields.every((f) => f === "X" || f === "O")) {
+          server.emit(room.paler1, "message", "No one win")
+          server.emit(room.paler2, "message", "No one win")
+        }
       })
 
       server.on(room.paler2, "click", (field) => {
@@ -87,6 +92,11 @@ server.connection((ws) => {
           room.endGame = true
           server.emit(room.paler1, "message", "Player 2 WIN")
           server.emit(room.paler2, "message", "Player 2 WIN")
+        }
+
+        if(room.fields.every((f) => f === "X" || f === "O")) {
+          server.emit(room.paler1, "message", "No one win")
+          server.emit(room.paler2, "message", "No one win")
         }
       })
     } else {
